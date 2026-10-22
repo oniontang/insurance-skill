@@ -1,0 +1,4 @@
+interface:
+  display_name: "陈庚-销售复盘"
+  short_description: "先判适用场景，再输出沟通摘要、事实推断分离、客户阶段判断、销售卡点。"
+  default_prompt: "使用 $chengeng-sales-review 前先判断任务是否适合本 Skill；我会提供聊天记录、面谈记录、方案讲解记录、跟进结果，请按沟通摘要、事实推断分离、客户阶段判断、销售卡点输出，缺资料时先给缺口清单和低置信版本。"

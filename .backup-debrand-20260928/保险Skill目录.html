@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>保险 Skill 目录 · 12 个技能包</title>
+<style>
+  :root{ --paper:#FBFAF8; --card:#FFFFFF; --ink:#15161A; --ink2:#3F4148;
+         --muted:#8A8D96; --line:#E7E3DD; --line2:#F1EEE9; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{ background:var(--paper); color:var(--ink);
+        font:15px/1.68 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+        -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums; }
+  .mono{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.86em; letter-spacing:-.01em }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 26px }
+  .dim{ color:var(--muted) }
+
+  header.top{ padding:36px 0 20px; border-bottom:1px solid var(--line) }
+  .hl{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap }
+  h1{ font-size:26px; font-weight:640; letter-spacing:-.015em }
+  .kicker{ font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted) }
+  .stats{ margin-top:9px; font-size:12.5px; color:var(--muted) }
+
+  .bar{ position:sticky; top:0; z-index:20; background:rgba(251,250,248,.95); backdrop-filter:blur(8px);
+        border-bottom:1px solid var(--line); padding:9px 0 }
+  .bar .wrap{ display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+  .sw{ position:relative; flex:0 0 214px }
+  input{ width:100%; padding:7px 30px 7px 11px; font:inherit; font-size:13px; color:var(--ink);
+         background:var(--card); border:1px solid var(--line); border-radius:7px; outline:none }
+  input:focus{ border-color:var(--ink); box-shadow:0 0 0 3px rgba(21,22,26,.06) }
+  input::placeholder{ color:#A8ABB3 }
+  .clr{ position:absolute; right:6px; top:50%; transform:translateY(-50%); border:0; background:none;
+        cursor:pointer; color:var(--muted); font-size:16px; line-height:1; padding:4px 7px; display:none }
+  .chips{ display:flex; gap:5px; flex-wrap:wrap; align-items:center }
+  .chip{ font:inherit; font-size:12px; padding:4px 10px; border:1px solid var(--line); border-radius:999px;
+         background:var(--card); color:var(--ink2); cursor:pointer; white-space:nowrap }
+  .chip b{ color:var(--muted); font-weight:500; margin-left:2px }
+  .chip:hover{ border-color:#C6C1B8 }
+  .chip.on{ background:var(--ink); border-color:var(--ink); color:#fff }
+  .chip.on b{ color:rgba(255,255,255,.55) }
+  .chip[data-f]:not([data-f="all"])::before{ content:""; display:inline-block; width:6px; height:6px;
+         border-radius:50%; background:var(--c); margin-right:6px; vertical-align:1px; opacity:.85 }
+  .tools{ display:flex; gap:12px; align-items:center; margin-left:auto; font-size:12px; color:var(--muted) }
+  .lnk{ font:inherit; font-size:12px; border:0; background:none; color:var(--ink2); cursor:pointer;
+        padding:0; border-bottom:1px solid var(--line) }
+  .lnk:hover{ color:var(--ink); border-color:var(--ink) }
+  .seg{ display:flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; background:var(--card) }
+  .seg button{ font:inherit; font-size:12px; padding:4px 10px; border:0; background:none; color:var(--ink2);
+               cursor:pointer; border-right:1px solid var(--line) }
+  .seg button:last-child{ border-right:0 }
+  .seg button.on{ background:var(--ink); color:#fff }
+
+  main{ padding:4px 0 20px }
+
+  /* ---------- 视图一：紧凑清单 ---------- */
+  .lvh{ display:grid; grid-template-columns:var(--cols); gap:16px; padding:9px 12px 7px;
+        font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted) }
+  .list{ border-top:1px solid var(--line) }
+  .item{ border-bottom:1px solid var(--line2) }
+  .hd{ display:grid; grid-template-columns:var(--cols); gap:16px; width:100%; align-items:center;
+       padding:8px 12px; border:0; background:none; font:inherit; text-align:left; cursor:pointer; color:var(--ink) }
+  .hd:hover{ background:#FDFCFA }
+  .item.open .hd{ background:#FDFCFA }
+  .c-t{ display:flex; align-items:center; gap:9px; font-weight:560; font-size:13.5px; letter-spacing:-.01em; min-width:0 }
+  .c-t span,.c-t{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .dot{ flex:0 0 7px; width:7px; height:7px; border-radius:50% }
+  .c-b{ font-size:12.5px; color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+  .c-c{ font-size:11.5px; color:var(--muted); white-space:nowrap }
+  .c-v{ font-size:11.5px; color:var(--ink2) }
+  .c-d{ font-size:11.5px; color:var(--muted) }
+  .c-x{ justify-self:end; width:14px; height:14px; position:relative }
+  .c-x::before,.c-x::after{ content:""; position:absolute; background:#A8ABB3; transition:transform .16s }
+  .c-x::before{ left:0; top:6px; width:14px; height:1.5px }
+  .c-x::after{ left:6px; top:0; width:1.5px; height:14px }
+  .item.open .c-x::after{ transform:scaleY(0) }
+  .item.open .c-x::before{ background:var(--ink) }
+  .item.open .c-x::after{ background:var(--ink) }
+  .bd{ display:none; padding:2px 26px 20px 48px }
+  .item.open .bd{ display:block }
+  dl{ border-top:1px dashed var(--line) }
+  .row{ display:grid; grid-template-columns:76px 1fr; gap:16px; padding:9px 0; border-bottom:1px dashed var(--line) }
+  .row:last-child{ border-bottom:0 }
+  dt{ font-size:12px; color:var(--muted) }
+  dd{ font-size:13.5px; color:var(--ink2) }
+  dd.mono{ font-size:12px; color:#6C6F77; word-break:break-all }
+
+  /* ---------- 视图二：分组卡片 ---------- */
+  .grp{ margin-top:34px }
+  .gh{ display:flex; align-items:center; gap:10px; font-size:13.5px; font-weight:600; padding-bottom:10px;
+       margin-bottom:14px; border-bottom:1px solid var(--line) }
+  .gc{ margin-left:2px; padding:1px 7px; border:1px solid var(--line); border-radius:999px;
+       font-size:11.5px; color:var(--muted); font-weight:400 }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(318px,1fr)); gap:14px }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:17px 19px 18px }
+  .ch{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px }
+  .tag{ font-size:11.5px; letter-spacing:.04em; color:var(--c); font-weight:600 }
+  .tag::before{ content:""; display:inline-block; width:5px; height:5px; border-radius:50%;
+                background:var(--c); margin-right:6px; vertical-align:2px }
+  .vr{ display:flex; align-items:center; gap:9px; font-size:11.5px; color:var(--muted) }
+  .vr b{ font-weight:500; color:var(--ink2); background:var(--line2); padding:1px 7px; border-radius:5px }
+  .card h3{ font-size:15.5px; font-weight:620; letter-spacing:-.01em; line-height:1.45 }
+  .purpose{ margin-top:9px; color:var(--ink2); font-size:13px; line-height:1.72 }
+  .use{ margin-top:13px; padding-top:11px; border-top:1px dashed var(--line) }
+  .ul{ display:block; font-size:11px; color:var(--muted); letter-spacing:.02em; margin-bottom:4px }
+  .use p{ font-size:12.5px; color:var(--ink2); line-height:1.72 }
+
+  footer{ margin-top:48px; padding:22px 0 54px; border-top:1px solid var(--line);
+          font-size:12.5px; color:var(--muted); line-height:1.9 }
+  .empty{ display:none; text-align:center; padding:70px 0; color:var(--muted); font-size:14px }
+  .hide{ display:none !important }
+
+  :root{ --cols:236px minmax(200px,1fr) 104px 56px 84px 16px }
+  @media (max-width:1080px){ :root{ --cols:210px minmax(160px,1fr) 96px 52px 78px 16px } }
+  @media (max-width:900px){
+    .c-c,.c-d{ display:none } :root{ --cols:minmax(150px,1fr) minmax(150px,1.4fr) 54px 16px }
+    .grid{ grid-template-columns:repeat(auto-fill,minmax(270px,1fr)) } .sw{ flex:1 1 100% }
+    .tools{ margin-left:0; width:100%; justify-content:space-between }
+  }
+  @media (max-width:600px){
+    .wrap{ padding:0 16px } h1{ font-size:22px }
+    :root{ --cols:1fr 16px } .c-b{ display:none }
+    .row{ grid-template-columns:1fr; gap:2px } .bd{ padding-left:16px }
+  }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none !important } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="hl"><p class="kicker">Skill Catalog</p><h1>保险 Skill 目录</h1></div>
+    <p class="stats">12 个技能包 · 5 类 · 40 份参考文档 · 14 个脚本 · 6 份模板 · 发布 2026-05 ~ 2026-09</p>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="sw">
+      <input id="q" type="search" placeholder="搜索名称、用途、触发词（按 / 聚焦）" autocomplete="off" spellcheck="false">
+      <button class="clr" id="clr" type="button" aria-label="清空">&times;</button>
+    </div>
+    <nav class="chips" id="chips"><button class="chip on" data-f="all" type="button">全部 <b class="mono">12</b></button>
+<button class="chip" data-f="router" type="button" style="--c:#1F6F5C">体系与路由 <b class="mono">1</b></button>
+<button class="chip" data-f="sales" type="button" style="--c:#8A5A00">销售与经营 <b class="mono">5</b></button>
+<button class="chip" data-f="plan" type="button" style="--c:#2F5D8C">方案与产品分析 <b class="mono">3</b></button>
+<button class="chip" data-f="content" type="button" style="--c:#6B4C9A">内容与获客 <b class="mono">1</b></button>
+<button class="chip" data-f="comp" type="button" style="--c:#8C2F39">合规与行业通用 <b class="mono">2</b></button></nav>
+    <div class="tools">
+      <span id="count">12 / 12</span>
+      <button class="lnk" id="exp" type="button">展开全部</button>
+      <span class="seg">
+        <button type="button" data-v="list" class="on">清单</button>
+        <button type="button" data-v="card">卡片</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section id="v-list">
+    <div class="lvh"><span>名称</span><span>一句话用途</span><span>分类</span><span>版本</span><span>发布</span><span></span></div>
+    <div class="list">
+      <div class="item" data-cat="router" data-text="陈庚 · 超级保险人 chengeng-growth-router 读对话判断该用哪个 skill，只推一个主入口 陈庚系列 skill 的总入口。先读当前对话，再在四种模式里选一种，每次只为你确定 1 个主 skill，让顾问直接从真实问题开始，不必先搞懂体系。 首次安装陈庚 skill、不知道怎么开始、只说“帮我看看”、交材料但没点名具体 skill，或一轮任务结束后问“下一步做什么”。用户已点名某个 skill 时尊重选择，不抢路由。 四种模式：首次使用 / 任务前路由 / 任务后导航 / 体系说明；按单步路由规则只推一个主 skill；输出统一为「当前判断 — 还缺什么 — 下一步」三段。 一次交接：平台支持 skill 间调用时直接交接，不支持时生成可继续使用的交接卡。 保留保险合规边界，不承诺成交、理赔、核保、医疗、法律或收入结果。 体系与路由 references/examples.md references/handoff-contract.md references/output-schema.md references/pre-task-routing.md references/runtime-rules.md references/skill-catalog.md references/onboarding.md references/post-task-navigation.md scripts/output_validator.py scripts/retry_policy.py scripts/quality_gate.py">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#1F6F5C"></i>陈庚 · 超级保险人</span>
+          <span class="c-b">读对话判断该用哪个 Skill，只推一个主入口</span>
+          <span class="c-c">体系与路由</span>
+          <span class="c-v mono">2.0.0</span>
+          <span class="c-d mono">2026-07-13</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>首次安装陈庚 Skill、不知道怎么开始、只说“帮我看看”、交材料但没点名具体 Skill，或一轮任务结束后问“下一步做什么”。用户已点名某个 Skill 时尊重选择，不抢路由。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>四种模式：首次使用 / 任务前路由 / 任务后导航 / 体系说明；按单步路由规则只推一个主 Skill；输出统一为「当前判断 — 还缺什么 — 下一步」三段。</dd></div>
+        <div class="row"><dt>输出</dt><dd>一次交接：平台支持 Skill 间调用时直接交接，不支持时生成可继续使用的交接卡。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>保留保险合规边界，不承诺成交、理赔、核保、医疗、法律或收入结果。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">8 份参考文档 · 3 个脚本 · 共 11 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">chengeng-growth-router-2.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="sales" data-text="陈庚 · 销售复盘 chengeng-sales-review 把客户沟通复盘成事实纪要与下一步动作 复盘保险客户沟通、面谈与方案推进过程，严格区分「客户明确说过的事实」和「从上下文推断的判断」，避免复盘变成自我感动。 需要复盘客户聊天、电话、面谈、方案讲解、异议处理、跟进结果或陪访记录。 先分离事实与判断 → 判断客户阶段 → 定位主要需求与关键顾虑 → 找销售卡点与表达风险 → 定下一步动作 → 沉淀可复用经验。 事实纪要 + 客户阶段与卡点诊断 + 表达问题清单 + 下一步动作 + 可复用经验。 不编造成交意向、不写成流水账；内置输入校验、错误码、重试复核、反模式 faq 与国内模型适配，减少格式漂移。 销售与经营 references/examples.md references/trigger-guide.md references/anti-patterns-and-faq.md references/output-schema.md references/core.md references/runtime-rules.md references/output-and-quality.md scripts/output_validator.py scripts/retry_policy.py scripts/quality_gate.py">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8A5A00"></i>陈庚 · 销售复盘</span>
+          <span class="c-b">把客户沟通复盘成事实纪要与下一步动作</span>
+          <span class="c-c">销售与经营</span>
+          <span class="c-v mono">1.0.2</span>
+          <span class="c-d mono">2026-07-05</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>需要复盘客户聊天、电话、面谈、方案讲解、异议处理、跟进结果或陪访记录。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>先分离事实与判断 → 判断客户阶段 → 定位主要需求与关键顾虑 → 找销售卡点与表达风险 → 定下一步动作 → 沉淀可复用经验。</dd></div>
+        <div class="row"><dt>输出</dt><dd>事实纪要 + 客户阶段与卡点诊断 + 表达问题清单 + 下一步动作 + 可复用经验。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>不编造成交意向、不写成流水账；内置输入校验、错误码、重试复核、反模式 FAQ 与国内模型适配，减少格式漂移。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">7 份参考文档 · 3 个脚本 · 共 10 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">chengeng-sales-review-1.0.2</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="sales" data-text="保险顾问专属智能体技能包 insurance-consultant-2 保障方案五步框架 + 朋友圈文案 + 异议话术 把一线保险顾问（寿险 + 家庭保障 + 个人 ip 打造）的专业知识系统化打包，覆盖从客户需求到朋友圈经营的完整链路。 提到保险、保障方案、客户、话术、朋友圈文案（保险相关）、保险行业；需要做客户保障方案、家庭风险评估、异议处理。 保障方案五步框架：家庭信息采集 → 需求四问 → 风险优先级排序 → 场景差异化方案 → 产品精准匹配；朋友圈三大模板（情感切入 / 场景切入 / 反向切入）；宏观经济信号 → 保险话术映射表；六大常见异议应对 + 关键数据武器；行业标杆「三讲三不讲、三分钟响应、三个主动服务」；信任重建四步法与高净值专项话术。 客户保障方案、朋友圈文案、宏观关联话术、异议应答、知识库更新记录。 附客户信息采集表与朋友圈文案模板，可直接填用。 销售与经营 references/客户分类.md references/行业标杆.md references/话术库.md references/宏观话术.md references/异议处理.md assets/朋友圈文案模板.md assets/客户信息采集表.md">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8A5A00"></i>保险顾问专属智能体技能包</span>
+          <span class="c-b">保障方案五步框架 + 朋友圈文案 + 异议话术</span>
+          <span class="c-c">销售与经营</span>
+          <span class="c-v mono">1.0.1</span>
+          <span class="c-d mono">2026-05-26</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>提到保险、保障方案、客户、话术、朋友圈文案（保险相关）、保险行业；需要做客户保障方案、家庭风险评估、异议处理。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>保障方案五步框架：家庭信息采集 → 需求四问 → 风险优先级排序 → 场景差异化方案 → 产品精准匹配；朋友圈三大模板（情感切入 / 场景切入 / 反向切入）；宏观经济信号 → 保险话术映射表；六大常见异议应对 + 关键数据武器；行业标杆「三讲三不讲、三分钟响应、三个主动服务」；信任重建四步法与高净值专项话术。</dd></div>
+        <div class="row"><dt>输出</dt><dd>客户保障方案、朋友圈文案、宏观关联话术、异议应答、知识库更新记录。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>附客户信息采集表与朋友圈文案模板，可直接填用。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">5 份参考文档 · 2 份模板 · 共 7 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">insurance-consultant-2-1.0.1</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="sales" data-text="中国保险超级销冠 · 融合 skill insurance-salesmaster 三条通道销冠的心智模型与决策启发式 全通道方法论：融合代理人（叶云燕、曹纪平）、经纪人（明亚精英李扬/翟童瞳/熊琦琦/易容）、互联网平台（慧择程斯文/黄思思、i云保赵斌/吴雄军）三条通道的思维框架与实战心法。 需要按顶尖销冠的思路拆客户、设计面谈节奏、准备异议应答，或判断自己该用哪种通道打法。 5 个核心心智模型（需求三角激活、kyc 深度穿透、方案阶梯法、通道适配策略、异议即成交契机）+ 8 条决策启发式（首问恐惧末问渴望、方案讲完等 30 秒、报价前先确认需求、大额保单必须线下见、理赔是最好的销售、先处理情绪再处理方案等）+ 表达 dna（语气、禁忌词、高频词、句式）+ 异议处理话术库。 带角色激活规则的销售思路拆解、面谈节奏建议与异议应答话术。 含明确禁忌词表，输出前需按“表达 dna”自检语气。 销售与经营 references/research/02-objection-handling.md references/research/01-sales-philosophy.md references/research/03-internet-playbook.md references/research/04-channel-comparison.md">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8A5A00"></i>中国保险超级销冠 · 融合 Skill</span>
+          <span class="c-b">三条通道销冠的心智模型与决策启发式</span>
+          <span class="c-c">销售与经营</span>
+          <span class="c-v mono">1.0.0</span>
+          <span class="c-d mono">2026-05-29</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>需要按顶尖销冠的思路拆客户、设计面谈节奏、准备异议应答，或判断自己该用哪种通道打法。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>5 个核心心智模型（需求三角激活、KYC 深度穿透、方案阶梯法、通道适配策略、异议即成交契机）+ 8 条决策启发式（首问恐惧末问渴望、方案讲完等 30 秒、报价前先确认需求、大额保单必须线下见、理赔是最好的销售、先处理情绪再处理方案等）+ 表达 DNA（语气、禁忌词、高频词、句式）+ 异议处理话术库。</dd></div>
+        <div class="row"><dt>输出</dt><dd>带角色激活规则的销售思路拆解、面谈节奏建议与异议应答话术。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>含明确禁忌词表，输出前需按“表达 DNA”自检语气。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">4 份参考文档 · 共 4 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">insurance-salesmaster-1.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="sales" data-text="保险销售话术助手 kunlun-sales-script-insurance 画客户 → 提价值 → 写话术 → 排异议 → 引成交 面向保险从业者的话术实战助手，按固定五步产出一套可落地、可复用的客户沟通方案。 要写给具体客户的开场与促成话术、做行业/运营方案类沟通材料，或需要增长型展业工具。 画客户 → 提价值 → 写话术 → 排异议 → 引成交；配套能力地图、标准流程、输入→产出说明、输出样例与卡点自救。 按客户画像定制的话术包与成交引导路径，含质量护栏与落地前检查清单。 明确划分「不适用，请转专业渠道」的情形；自带业务适用识别信号与效果评分矩阵。 销售与经营">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8A5A00"></i>保险销售话术助手</span>
+          <span class="c-b">画客户 → 提价值 → 写话术 → 排异议 → 引成交</span>
+          <span class="c-c">销售与经营</span>
+          <span class="c-v mono">1.0.0</span>
+          <span class="c-d mono">2026-08-24</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>要写给具体客户的开场与促成话术、做行业/运营方案类沟通材料，或需要增长型展业工具。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>画客户 → 提价值 → 写话术 → 排异议 → 引成交；配套能力地图、标准流程、输入→产出说明、输出样例与卡点自救。</dd></div>
+        <div class="row"><dt>输出</dt><dd>按客户画像定制的话术包与成交引导路径，含质量护栏与落地前检查清单。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>明确划分「不适用，请转专业渠道」的情形；自带业务适用识别信号与效果评分矩阵。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">单文件（内容全部内置于 SKILL.md） · 共 0 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">kunlun-sales-script-insurance-1.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="sales" data-text="理财保险销售专家 licai-insurance-sales 从 kyc 到保单检视、客户经营与转介绍 理财险与健康险销售的全流程支持：从客户信息采集分类一路做到成交后的客户经营与转介绍。 向 ai 描述某个客户的情况或销售场景；提到理财险、增额终身寿、年金险、分红险、万能险、重疾险、kyc、客户分类、需求挖掘、产品匹配、话术、异议处理、促成、保单检视、生日祝福、客户经营、转介绍。 先过合规红线自查，再按场景路由到 7 个模块：kyc 客户采集与分类、matching 需求与产品匹配、scripts 话术设计、proposal 方案讲解与收益演示、policy-review 保单检视与整理、care 祝福与关怀、ops 客户经营复盘与转介绍。 客户档案与分类、需求总结、产品匹配建议、销售话术、利益演示方案、保单检视报告、关怀文案、经营复盘与转介绍动作。 附 kyc 模板、保单检视报告模板与产品库模板，可直接复用。 销售与经营 references/care.md references/ops.md references/matching.md references/policy-review.md references/scripts.md references/proposal.md references/kyc.md assets/policy-review-report-template.md assets/product-library-template.md assets/product-library.md assets/kyc-template.md">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8A5A00"></i>理财保险销售专家</span>
+          <span class="c-b">从 KYC 到保单检视、客户经营与转介绍</span>
+          <span class="c-c">销售与经营</span>
+          <span class="c-v mono">1.0.0</span>
+          <span class="c-d mono">2026-09-16</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>向 AI 描述某个客户的情况或销售场景；提到理财险、增额终身寿、年金险、分红险、万能险、重疾险、KYC、客户分类、需求挖掘、产品匹配、话术、异议处理、促成、保单检视、生日祝福、客户经营、转介绍。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>先过合规红线自查，再按场景路由到 7 个模块：kyc 客户采集与分类、matching 需求与产品匹配、scripts 话术设计、proposal 方案讲解与收益演示、policy-review 保单检视与整理、care 祝福与关怀、ops 客户经营复盘与转介绍。</dd></div>
+        <div class="row"><dt>输出</dt><dd>客户档案与分类、需求总结、产品匹配建议、销售话术、利益演示方案、保单检视报告、关怀文案、经营复盘与转介绍动作。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>附 KYC 模板、保单检视报告模板与产品库模板，可直接复用。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">7 份参考文档 · 4 份模板 · 共 11 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">licai-insurance-skill-1.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="plan" data-text="陈庚 · 养老方案设计 chengeng-pension-solution-design 按生、老、病、死四模块出养老方案报告 养老规划四步法里的第四步：不重复计算，按生、老、病、死四个模块把前面的数字变成可讲给客户听的方案。 前三步（养老金测算、退休现金流、来源与缺口）已完成，要出养老方案设计报告时。 生：退休之后怎么生活、资金池怎么安排；老：4 级护理状态与照护资源；病：5 档风险情况下的保障工具组合；死：传承安排如何落地；最后给分阶段行动计划。 八节结构的《养老方案设计报告》，含方案前提、设计原则与行动计划，可导出 docx。 不写具体保险产品名称、不承诺收益、不把方案写成销售逼单。 方案与产品分析 scripts/pension_calculator.py scripts/pension_case_builder.py scripts/pension_report_docx.py">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#2F5D8C"></i>陈庚 · 养老方案设计</span>
+          <span class="c-b">按生、老、病、死四模块出养老方案报告</span>
+          <span class="c-c">方案与产品分析</span>
+          <span class="c-v mono">1.0.0</span>
+          <span class="c-d mono">2026-07-23</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>前三步（养老金测算、退休现金流、来源与缺口）已完成，要出养老方案设计报告时。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>生：退休之后怎么生活、资金池怎么安排；老：4 级护理状态与照护资源；病：5 档风险情况下的保障工具组合；死：传承安排如何落地；最后给分阶段行动计划。</dd></div>
+        <div class="row"><dt>输出</dt><dd>八节结构的《养老方案设计报告》，含方案前提、设计原则与行动计划，可导出 DOCX。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>不写具体保险产品名称、不承诺收益、不把方案写成销售逼单。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">3 个脚本 · 共 3 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">chengeng-pension-solution-design-1.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="plan" data-text="保险产品对比（双引擎） insurance-product-compare 内置 19 个产品 + 自贴方案多公司比价 双引擎保险产品对比工具：一边是内置产品数据，一边是用户自贴方案，支持多公司横向比价与同险种 / 跨险种对比。 保险经纪人、代理人要给客户做方案比选、整理多家报价，或回答“这两第三款哪个更合适”。 三种模式：① 内置 19 个产品数据对比（医疗险 6 / 重疾险 6 / 雇主险 3 / 寿险储蓄 3 / 意外险 1）；② 用户自贴方案做多公司横向比价；③ 同险种或跨险种同标的对比。 结构化对比表 + 场景问答结论。 数据内置于 skill.md，带数据更新日志与已知限制说明（作者 weyn）。 方案与产品分析">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#2F5D8C"></i>保险产品对比（双引擎）</span>
+          <span class="c-b">内置 19 个产品 + 自贴方案多公司比价</span>
+          <span class="c-c">方案与产品分析</span>
+          <span class="c-v mono">1.0.1</span>
+          <span class="c-d mono">2026-05-30</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>保险经纪人、代理人要给客户做方案比选、整理多家报价，或回答“这两第三款哪个更合适”。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>三种模式：① 内置 19 个产品数据对比（医疗险 6 / 重疾险 6 / 雇主险 3 / 寿险储蓄 3 / 意外险 1）；② 用户自贴方案做多公司横向比价；③ 同险种或跨险种同标的对比。</dd></div>
+        <div class="row"><dt>输出</dt><dd>结构化对比表 + 场景问答结论。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>数据内置于 SKILL.md，带数据更新日志与已知限制说明（作者 weyn）。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">单文件（内容全部内置于 SKILL.md） · 共 0 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">insurance-product-compare-1.0.1</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="plan" data-text="医疗保险产品分析与对比 medical-insurance-policy-comparison 医疗险 7 维拆解与 9 级优先级横向对比 懂条款、懂精算、立场明确站在打工人利益一侧的医疗险分析工具，覆盖百万医疗、中端、高端、防癌、惠民保与专项医疗（孕产 / 齿科 / 眼科）。 任何涉及医疗险条款拆解、产品对比、保障分析、续保稳定性评估的话题：分析这份保险、对比几款百万医疗险、我家怎么配、保不保、外购药报销、保证续保 20 年哪个好。 先做保单结构识别与条款完整性检查。单一产品按 7 大维度拆解（基本信息、免责条款必须列全、各类清单实用性、值得关注条款、费率分析、增值服务、7 维度总结）；多产品按 9 级优先级排序对比：预算 → 续保稳定性 → 核保/免责 → 基础责任 → 免赔额 → 赔付比例 → 特需部 → 特色保障 → 增值服务。 单产品深度拆解报告或多产品横向对比表。 准确性铁律 6 条不可违反，并规定「找不到信息时的标准回复模板」；自带 evals 评测集。 方案与产品分析 evals/evals.json">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#2F5D8C"></i>医疗保险产品分析与对比</span>
+          <span class="c-b">医疗险 7 维拆解与 9 级优先级横向对比</span>
+          <span class="c-c">方案与产品分析</span>
+          <span class="c-v mono">1.0.0</span>
+          <span class="c-d mono">2026-07-20</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>任何涉及医疗险条款拆解、产品对比、保障分析、续保稳定性评估的话题：分析这份保险、对比几款百万医疗险、我家怎么配、保不保、外购药报销、保证续保 20 年哪个好。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>先做保单结构识别与条款完整性检查。单一产品按 7 大维度拆解（基本信息、免责条款必须列全、各类清单实用性、值得关注条款、费率分析、增值服务、7 维度总结）；多产品按 9 级优先级排序对比：预算 → 续保稳定性 → 核保/免责 → 基础责任 → 免赔额 → 赔付比例 → 特需部 → 特色保障 → 增值服务。</dd></div>
+        <div class="row"><dt>输出</dt><dd>单产品深度拆解报告或多产品横向对比表。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>准确性铁律 6 条不可违反，并规定「找不到信息时的标准回复模板」；自带 evals 评测集。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">evals · 共 1 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">medical-insurance-policy-comparison-1.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="content" data-text="小绿书内容生产线（保险垂直） xls-content 选题到配图推草稿箱的六阶段流水线 微信图文 / 图片消息（小绿书）的成批生产线，纯保险垂直。知识性 × 情绪性双载体：封面吃情绪价值，后端给手绘风专业指引，内容先情绪挑逗再专业指导。 要持续产出保险选题的小绿书图文，或需要选题、提纲、初稿、配图到推草稿箱的一条龙。 六阶段：stage 0 选题策划 → 1 提纲确认 → 2 素材与文风 → 3 初稿（≤200 字 + 私域钩子、去 ai 味）→ 4 配图（封面情绪图 + 后端手绘指引图）→ 5 合规与微信规则 → 6 推小绿书草稿箱。 可直接进草稿箱的完整图文（文案 + 封面图 + 手绘指引图）。 微信内强私域闭环；配图与推送均有脚本支撑，推送前需过合规检查。 内容与获客 references/style-archive.md references/templates.md references/handdrawn-guide-style.md references/topics.md references/platform-rules.md references/content-framework.md references/cover-design-system.md scripts/push_wechat_draft.py scripts/crop_watermark.py scripts/xls_image_builder.py 上传说明.md">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#6B4C9A"></i>小绿书内容生产线（保险垂直）</span>
+          <span class="c-b">选题到配图推草稿箱的六阶段流水线</span>
+          <span class="c-c">内容与获客</span>
+          <span class="c-v mono">1.0.0</span>
+          <span class="c-d mono">2026-07-20</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>要持续产出保险选题的小绿书图文，或需要选题、提纲、初稿、配图到推草稿箱的一条龙。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>六阶段：Stage 0 选题策划 → 1 提纲确认 → 2 素材与文风 → 3 初稿（≤200 字 + 私域钩子、去 AI 味）→ 4 配图（封面情绪图 + 后端手绘指引图）→ 5 合规与微信规则 → 6 推小绿书草稿箱。</dd></div>
+        <div class="row"><dt>输出</dt><dd>可直接进草稿箱的完整图文（文案 + 封面图 + 手绘指引图）。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>微信内强私域闭环；配图与推送均有脚本支撑，推送前需过合规检查。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">7 份参考文档 · 3 个脚本 · 上传说明 · 共 11 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">xls-content-1.0.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="comp" data-text="fin-pipl 金融个人信息保护合规检查 fin-pipl 金融个保合规自查，出报告与整改台账 金融行业个人信息保护（pipl）合规检查工具，基于《个人信息保护法》、jr/t 0171《个人金融信息保护技术规范》与 jr/t 0197《金融数据安全 数据安全分级指南》，覆盖银行、证券、保险、支付四大场景。 需要给金融业务做个人信息处理合规自查、出具评估报告，或长期跟踪整改进度。 四种用法：--demo 用内置样例直接出报告（不必先答题）；交互式逐题自查并存盘；用答案文件作答（适合复跑、批处理与 agent 调用）；--ledger 合规台账自动与上次对比、输出整改进度（跨次累积）。 markdown / json / html 三格式合规报告 + 可持续累积的整改台账。 skill.md 开头有 12 条法律声明：非法律建议、结论基于用户自述且未核实、准确性与责任均有限制。 合规与行业通用 references/jr-t-0171.md references/jr-t-0197.md scripts/fin-pipl-check.py scripts/core/__init__.py changelog.md readme.md disclaimer.md">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8C2F39"></i>Fin-PIPL 金融个人信息保护合规检查</span>
+          <span class="c-b">金融个保合规自查，出报告与整改台账</span>
+          <span class="c-c">合规与行业通用</span>
+          <span class="c-v mono">1.7.0</span>
+          <span class="c-d mono">2026-09-26</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>需要给金融业务做个人信息处理合规自查、出具评估报告，或长期跟踪整改进度。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>四种用法：--demo 用内置样例直接出报告（不必先答题）；交互式逐题自查并存盘；用答案文件作答（适合复跑、批处理与 Agent 调用）；--ledger 合规台账自动与上次对比、输出整改进度（跨次累积）。</dd></div>
+        <div class="row"><dt>输出</dt><dd>Markdown / JSON / HTML 三格式合规报告 + 可持续累积的整改台账。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>SKILL.md 开头有 12 条法律声明：非法律建议、结论基于用户自述且未核实、准确性与责任均有限制。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">2 份参考文档 · 2 个脚本 · CHANGELOG、README、DISCLAIMER · 共 7 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">fin-pipl-1.7.0</dd></div>
+        </dl></div>
+      </div>
+      <div class="item" data-cat="comp" data-text="金融保险 · 金融财务 finance-finance_ops 金融保险财务全流程，人工在环可溯源交付 金融保险行业的财务垂直技能，覆盖金融财务全流程与行业专属场景、指标口径与合规要求，强调人工在环与可溯源交付。 保险/金融机构的财务分析、指标口径核对、流程性财务交付任务。 角色定位 → 典型业务场景 → 关键指标 kpi → 合规红线 → 工具与系统集成 → 标准工作流 → 人工在环（hitl）闸门 → 输出规范 → 禁止事项。 经人工确认、可溯源的财务交付物。 内置 payskill 按量付费接口（支付宝 ai 付，a2m · http 402），商户与生产配置尚待填写。 合规与行业通用">
+        <button class="hd" type="button" aria-expanded="false">
+          <span class="c-t"><i class="dot" style="background:#8C2F39"></i>金融保险 · 金融财务</span>
+          <span class="c-b">金融保险财务全流程，人工在环可溯源交付</span>
+          <span class="c-c">合规与行业通用</span>
+          <span class="c-v mono">2.0.2</span>
+          <span class="c-d mono">2026-09-03</span>
+          <span class="c-x" aria-hidden="true"></span>
+        </button>
+        <div class="bd"><dl>
+        <div class="row"><dt>何时用</dt><dd>保险/金融机构的财务分析、指标口径核对、流程性财务交付任务。</dd></div>
+        <div class="row"><dt>怎么做</dt><dd>角色定位 → 典型业务场景 → 关键指标 KPI → 合规红线 → 工具与系统集成 → 标准工作流 → 人工在环（HITL）闸门 → 输出规范 → 禁止事项。</dd></div>
+        <div class="row"><dt>输出</dt><dd>经人工确认、可溯源的财务交付物。</dd></div>
+        <div class="row"><dt>边界与注意</dt><dd>内置 PaySkill 按量付费接口（支付宝 AI 付，A2M · HTTP 402），商户与生产配置尚待填写。</dd></div>
+          <div class="row"><dt>附带资源</dt><dd class="mono">单文件（内容全部内置于 SKILL.md） · 共 0 个文件</dd></div>
+          <div class="row"><dt>包目录</dt><dd class="mono">finance-finance-ops-2.0.2</dd></div>
+        </dl></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-card" class="hide">
+  <section class="grp">
+    <h2 class="gh"><span class="dot" style="background:#1F6F5C"></span>体系与路由<span class="gc mono">1</span></h2>
+    <div class="grid">
+  <article class="card" data-cat="router" data-text="陈庚 · 超级保险人 chengeng-growth-router 读对话判断该用哪个 skill，只推一个主入口 陈庚系列 skill 的总入口。先读当前对话，再在四种模式里选一种，每次只为你确定 1 个主 skill，让顾问直接从真实问题开始，不必先搞懂体系。 首次安装陈庚 skill、不知道怎么开始、只说“帮我看看”、交材料但没点名具体 skill，或一轮任务结束后问“下一步做什么”。用户已点名某个 skill 时尊重选择，不抢路由。 四种模式：首次使用 / 任务前路由 / 任务后导航 / 体系说明；按单步路由规则只推一个主 skill；输出统一为「当前判断 — 还缺什么 — 下一步」三段。 一次交接：平台支持 skill 间调用时直接交接，不支持时生成可继续使用的交接卡。 保留保险合规边界，不承诺成交、理赔、核保、医疗、法律或收入结果。 体系与路由 references/examples.md references/handoff-contract.md references/output-schema.md references/pre-task-routing.md references/runtime-rules.md references/skill-catalog.md references/onboarding.md references/post-task-navigation.md scripts/output_validator.py scripts/retry_policy.py scripts/quality_gate.py">
+    <header class="ch"><span class="tag" style="--c:#1F6F5C">体系与路由</span><span class="vr"><b class="mono">2.0.0</b><i>2026-07-13</i></span></header>
+    <h3>陈庚 · 超级保险人</h3>
+    <p class="purpose">陈庚系列 Skill 的总入口。先读当前对话，再在四种模式里选一种，每次只为你确定 1 个主 Skill，让顾问直接从真实问题开始，不必先搞懂体系。</p>
+    <div class="use"><span class="ul">应用场景</span><p>首次安装陈庚 Skill、不知道怎么开始、只说“帮我看看”、交材料但没点名具体 Skill，或一轮任务结束后问“下一步做什么”。用户已点名某个 Skill 时尊重选择，不抢路由。</p></div>
+  </article>
+    </div>
+  </section>
+  <section class="grp">
+    <h2 class="gh"><span class="dot" style="background:#8A5A00"></span>销售与经营<span class="gc mono">5</span></h2>
+    <div class="grid">
+  <article class="card" data-cat="sales" data-text="陈庚 · 销售复盘 chengeng-sales-review 把客户沟通复盘成事实纪要与下一步动作 复盘保险客户沟通、面谈与方案推进过程，严格区分「客户明确说过的事实」和「从上下文推断的判断」，避免复盘变成自我感动。 需要复盘客户聊天、电话、面谈、方案讲解、异议处理、跟进结果或陪访记录。 先分离事实与判断 → 判断客户阶段 → 定位主要需求与关键顾虑 → 找销售卡点与表达风险 → 定下一步动作 → 沉淀可复用经验。 事实纪要 + 客户阶段与卡点诊断 + 表达问题清单 + 下一步动作 + 可复用经验。 不编造成交意向、不写成流水账；内置输入校验、错误码、重试复核、反模式 faq 与国内模型适配，减少格式漂移。 销售与经营 references/examples.md references/trigger-guide.md references/anti-patterns-and-faq.md references/output-schema.md references/core.md references/runtime-rules.md references/output-and-quality.md scripts/output_validator.py scripts/retry_policy.py scripts/quality_gate.py">
+    <header class="ch"><span class="tag" style="--c:#8A5A00">销售与经营</span><span class="vr"><b class="mono">1.0.2</b><i>2026-07-05</i></span></header>
+    <h3>陈庚 · 销售复盘</h3>
+    <p class="purpose">复盘保险客户沟通、面谈与方案推进过程，严格区分「客户明确说过的事实」和「从上下文推断的判断」，避免复盘变成自我感动。</p>
+    <div class="use"><span class="ul">应用场景</span><p>需要复盘客户聊天、电话、面谈、方案讲解、异议处理、跟进结果或陪访记录。</p></div>
+  </article>
+  <article class="card" data-cat="sales" data-text="保险顾问专属智能体技能包 insurance-consultant-2 保障方案五步框架 + 朋友圈文案 + 异议话术 把一线保险顾问（寿险 + 家庭保障 + 个人 ip 打造）的专业知识系统化打包，覆盖从客户需求到朋友圈经营的完整链路。 提到保险、保障方案、客户、话术、朋友圈文案（保险相关）、保险行业；需要做客户保障方案、家庭风险评估、异议处理。 保障方案五步框架：家庭信息采集 → 需求四问 → 风险优先级排序 → 场景差异化方案 → 产品精准匹配；朋友圈三大模板（情感切入 / 场景切入 / 反向切入）；宏观经济信号 → 保险话术映射表；六大常见异议应对 + 关键数据武器；行业标杆「三讲三不讲、三分钟响应、三个主动服务」；信任重建四步法与高净值专项话术。 客户保障方案、朋友圈文案、宏观关联话术、异议应答、知识库更新记录。 附客户信息采集表与朋友圈文案模板，可直接填用。 销售与经营 references/客户分类.md references/行业标杆.md references/话术库.md references/宏观话术.md references/异议处理.md assets/朋友圈文案模板.md assets/客户信息采集表.md">
+    <header class="ch"><span class="tag" style="--c:#8A5A00">销售与经营</span><span class="vr"><b class="mono">1.0.1</b><i>2026-05-26</i></span></header>
+    <h3>保险顾问专属智能体技能包</h3>
+    <p class="purpose">把一线保险顾问（寿险 + 家庭保障 + 个人 IP 打造）的专业知识系统化打包，覆盖从客户需求到朋友圈经营的完整链路。</p>
+    <div class="use"><span class="ul">应用场景</span><p>提到保险、保障方案、客户、话术、朋友圈文案（保险相关）、保险行业；需要做客户保障方案、家庭风险评估、异议处理。</p></div>
+  </article>
+  <article class="card" data-cat="sales" data-text="中国保险超级销冠 · 融合 skill insurance-salesmaster 三条通道销冠的心智模型与决策启发式 全通道方法论：融合代理人（叶云燕、曹纪平）、经纪人（明亚精英李扬/翟童瞳/熊琦琦/易容）、互联网平台（慧择程斯文/黄思思、i云保赵斌/吴雄军）三条通道的思维框架与实战心法。 需要按顶尖销冠的思路拆客户、设计面谈节奏、准备异议应答，或判断自己该用哪种通道打法。 5 个核心心智模型（需求三角激活、kyc 深度穿透、方案阶梯法、通道适配策略、异议即成交契机）+ 8 条决策启发式（首问恐惧末问渴望、方案讲完等 30 秒、报价前先确认需求、大额保单必须线下见、理赔是最好的销售、先处理情绪再处理方案等）+ 表达 dna（语气、禁忌词、高频词、句式）+ 异议处理话术库。 带角色激活规则的销售思路拆解、面谈节奏建议与异议应答话术。 含明确禁忌词表，输出前需按“表达 dna”自检语气。 销售与经营 references/research/02-objection-handling.md references/research/01-sales-philosophy.md references/research/03-internet-playbook.md references/research/04-channel-comparison.md">
+    <header class="ch"><span class="tag" style="--c:#8A5A00">销售与经营</span><span class="vr"><b class="mono">1.0.0</b><i>2026-05-29</i></span></header>
+    <h3>中国保险超级销冠 · 融合 Skill</h3>
+    <p class="purpose">全通道方法论：融合代理人（叶云燕、曹纪平）、经纪人（明亚精英李扬/翟童瞳/熊琦琦/易容）、互联网平台（慧择程斯文/黄思思、i云保赵斌/吴雄军）三条通道的思维框架与实战心法。</p>
+    <div class="use"><span class="ul">应用场景</span><p>需要按顶尖销冠的思路拆客户、设计面谈节奏、准备异议应答，或判断自己该用哪种通道打法。</p></div>
+  </article>
+  <article class="card" data-cat="sales" data-text="保险销售话术助手 kunlun-sales-script-insurance 画客户 → 提价值 → 写话术 → 排异议 → 引成交 面向保险从业者的话术实战助手，按固定五步产出一套可落地、可复用的客户沟通方案。 要写给具体客户的开场与促成话术、做行业/运营方案类沟通材料，或需要增长型展业工具。 画客户 → 提价值 → 写话术 → 排异议 → 引成交；配套能力地图、标准流程、输入→产出说明、输出样例与卡点自救。 按客户画像定制的话术包与成交引导路径，含质量护栏与落地前检查清单。 明确划分「不适用，请转专业渠道」的情形；自带业务适用识别信号与效果评分矩阵。 销售与经营">
+    <header class="ch"><span class="tag" style="--c:#8A5A00">销售与经营</span><span class="vr"><b class="mono">1.0.0</b><i>2026-08-24</i></span></header>
+    <h3>保险销售话术助手</h3>
+    <p class="purpose">面向保险从业者的话术实战助手，按固定五步产出一套可落地、可复用的客户沟通方案。</p>
+    <div class="use"><span class="ul">应用场景</span><p>要写给具体客户的开场与促成话术、做行业/运营方案类沟通材料，或需要增长型展业工具。</p></div>
+  </article>
+  <article class="card" data-cat="sales" data-text="理财保险销售专家 licai-insurance-sales 从 kyc 到保单检视、客户经营与转介绍 理财险与健康险销售的全流程支持：从客户信息采集分类一路做到成交后的客户经营与转介绍。 向 ai 描述某个客户的情况或销售场景；提到理财险、增额终身寿、年金险、分红险、万能险、重疾险、kyc、客户分类、需求挖掘、产品匹配、话术、异议处理、促成、保单检视、生日祝福、客户经营、转介绍。 先过合规红线自查，再按场景路由到 7 个模块：kyc 客户采集与分类、matching 需求与产品匹配、scripts 话术设计、proposal 方案讲解与收益演示、policy-review 保单检视与整理、care 祝福与关怀、ops 客户经营复盘与转介绍。 客户档案与分类、需求总结、产品匹配建议、销售话术、利益演示方案、保单检视报告、关怀文案、经营复盘与转介绍动作。 附 kyc 模板、保单检视报告模板与产品库模板，可直接复用。 销售与经营 references/care.md references/ops.md references/matching.md references/policy-review.md references/scripts.md references/proposal.md references/kyc.md assets/policy-review-report-template.md assets/product-library-template.md assets/product-library.md assets/kyc-template.md">
+    <header class="ch"><span class="tag" style="--c:#8A5A00">销售与经营</span><span class="vr"><b class="mono">1.0.0</b><i>2026-09-16</i></span></header>
+    <h3>理财保险销售专家</h3>
+    <p class="purpose">理财险与健康险销售的全流程支持：从客户信息采集分类一路做到成交后的客户经营与转介绍。</p>
+    <div class="use"><span class="ul">应用场景</span><p>向 AI 描述某个客户的情况或销售场景；提到理财险、增额终身寿、年金险、分红险、万能险、重疾险、KYC、客户分类、需求挖掘、产品匹配、话术、异议处理、促成、保单检视、生日祝福、客户经营、转介绍。</p></div>
+  </article>
+    </div>
+  </section>
+  <section class="grp">
+    <h2 class="gh"><span class="dot" style="background:#2F5D8C"></span>方案与产品分析<span class="gc mono">3</span></h2>
+    <div class="grid">
+  <article class="card" data-cat="plan" data-text="陈庚 · 养老方案设计 chengeng-pension-solution-design 按生、老、病、死四模块出养老方案报告 养老规划四步法里的第四步：不重复计算，按生、老、病、死四个模块把前面的数字变成可讲给客户听的方案。 前三步（养老金测算、退休现金流、来源与缺口）已完成，要出养老方案设计报告时。 生：退休之后怎么生活、资金池怎么安排；老：4 级护理状态与照护资源；病：5 档风险情况下的保障工具组合；死：传承安排如何落地；最后给分阶段行动计划。 八节结构的《养老方案设计报告》，含方案前提、设计原则与行动计划，可导出 docx。 不写具体保险产品名称、不承诺收益、不把方案写成销售逼单。 方案与产品分析 scripts/pension_calculator.py scripts/pension_case_builder.py scripts/pension_report_docx.py">
+    <header class="ch"><span class="tag" style="--c:#2F5D8C">方案与产品分析</span><span class="vr"><b class="mono">1.0.0</b><i>2026-07-23</i></span></header>
+    <h3>陈庚 · 养老方案设计</h3>
+    <p class="purpose">养老规划四步法里的第四步：不重复计算，按生、老、病、死四个模块把前面的数字变成可讲给客户听的方案。</p>
+    <div class="use"><span class="ul">应用场景</span><p>前三步（养老金测算、退休现金流、来源与缺口）已完成，要出养老方案设计报告时。</p></div>
+  </article>
+  <article class="card" data-cat="plan" data-text="保险产品对比（双引擎） insurance-product-compare 内置 19 个产品 + 自贴方案多公司比价 双引擎保险产品对比工具：一边是内置产品数据，一边是用户自贴方案，支持多公司横向比价与同险种 / 跨险种对比。 保险经纪人、代理人要给客户做方案比选、整理多家报价，或回答“这两第三款哪个更合适”。 三种模式：① 内置 19 个产品数据对比（医疗险 6 / 重疾险 6 / 雇主险 3 / 寿险储蓄 3 / 意外险 1）；② 用户自贴方案做多公司横向比价；③ 同险种或跨险种同标的对比。 结构化对比表 + 场景问答结论。 数据内置于 skill.md，带数据更新日志与已知限制说明（作者 weyn）。 方案与产品分析">
+    <header class="ch"><span class="tag" style="--c:#2F5D8C">方案与产品分析</span><span class="vr"><b class="mono">1.0.1</b><i>2026-05-30</i></span></header>
+    <h3>保险产品对比（双引擎）</h3>
+    <p class="purpose">双引擎保险产品对比工具：一边是内置产品数据，一边是用户自贴方案，支持多公司横向比价与同险种 / 跨险种对比。</p>
+    <div class="use"><span class="ul">应用场景</span><p>保险经纪人、代理人要给客户做方案比选、整理多家报价，或回答“这两第三款哪个更合适”。</p></div>
+  </article>
+  <article class="card" data-cat="plan" data-text="医疗保险产品分析与对比 medical-insurance-policy-comparison 医疗险 7 维拆解与 9 级优先级横向对比 懂条款、懂精算、立场明确站在打工人利益一侧的医疗险分析工具，覆盖百万医疗、中端、高端、防癌、惠民保与专项医疗（孕产 / 齿科 / 眼科）。 任何涉及医疗险条款拆解、产品对比、保障分析、续保稳定性评估的话题：分析这份保险、对比几款百万医疗险、我家怎么配、保不保、外购药报销、保证续保 20 年哪个好。 先做保单结构识别与条款完整性检查。单一产品按 7 大维度拆解（基本信息、免责条款必须列全、各类清单实用性、值得关注条款、费率分析、增值服务、7 维度总结）；多产品按 9 级优先级排序对比：预算 → 续保稳定性 → 核保/免责 → 基础责任 → 免赔额 → 赔付比例 → 特需部 → 特色保障 → 增值服务。 单产品深度拆解报告或多产品横向对比表。 准确性铁律 6 条不可违反，并规定「找不到信息时的标准回复模板」；自带 evals 评测集。 方案与产品分析 evals/evals.json">
+    <header class="ch"><span class="tag" style="--c:#2F5D8C">方案与产品分析</span><span class="vr"><b class="mono">1.0.0</b><i>2026-07-20</i></span></header>
+    <h3>医疗保险产品分析与对比</h3>
+    <p class="purpose">懂条款、懂精算、立场明确站在打工人利益一侧的医疗险分析工具，覆盖百万医疗、中端、高端、防癌、惠民保与专项医疗（孕产 / 齿科 / 眼科）。</p>
+    <div class="use"><span class="ul">应用场景</span><p>任何涉及医疗险条款拆解、产品对比、保障分析、续保稳定性评估的话题：分析这份保险、对比几款百万医疗险、我家怎么配、保不保、外购药报销、保证续保 20 年哪个好。</p></div>
+  </article>
+    </div>
+  </section>
+  <section class="grp">
+    <h2 class="gh"><span class="dot" style="background:#6B4C9A"></span>内容与获客<span class="gc mono">1</span></h2>
+    <div class="grid">
+  <article class="card" data-cat="content" data-text="小绿书内容生产线（保险垂直） xls-content 选题到配图推草稿箱的六阶段流水线 微信图文 / 图片消息（小绿书）的成批生产线，纯保险垂直。知识性 × 情绪性双载体：封面吃情绪价值，后端给手绘风专业指引，内容先情绪挑逗再专业指导。 要持续产出保险选题的小绿书图文，或需要选题、提纲、初稿、配图到推草稿箱的一条龙。 六阶段：stage 0 选题策划 → 1 提纲确认 → 2 素材与文风 → 3 初稿（≤200 字 + 私域钩子、去 ai 味）→ 4 配图（封面情绪图 + 后端手绘指引图）→ 5 合规与微信规则 → 6 推小绿书草稿箱。 可直接进草稿箱的完整图文（文案 + 封面图 + 手绘指引图）。 微信内强私域闭环；配图与推送均有脚本支撑，推送前需过合规检查。 内容与获客 references/style-archive.md references/templates.md references/handdrawn-guide-style.md references/topics.md references/platform-rules.md references/content-framework.md references/cover-design-system.md scripts/push_wechat_draft.py scripts/crop_watermark.py scripts/xls_image_builder.py 上传说明.md">
+    <header class="ch"><span class="tag" style="--c:#6B4C9A">内容与获客</span><span class="vr"><b class="mono">1.0.0</b><i>2026-07-20</i></span></header>
+    <h3>小绿书内容生产线（保险垂直）</h3>
+    <p class="purpose">微信图文 / 图片消息（小绿书）的成批生产线，纯保险垂直。知识性 × 情绪性双载体：封面吃情绪价值，后端给手绘风专业指引，内容先情绪挑逗再专业指导。</p>
+    <div class="use"><span class="ul">应用场景</span><p>要持续产出保险选题的小绿书图文，或需要选题、提纲、初稿、配图到推草稿箱的一条龙。</p></div>
+  </article>
+    </div>
+  </section>
+  <section class="grp">
+    <h2 class="gh"><span class="dot" style="background:#8C2F39"></span>合规与行业通用<span class="gc mono">2</span></h2>
+    <div class="grid">
+  <article class="card" data-cat="comp" data-text="fin-pipl 金融个人信息保护合规检查 fin-pipl 金融个保合规自查，出报告与整改台账 金融行业个人信息保护（pipl）合规检查工具，基于《个人信息保护法》、jr/t 0171《个人金融信息保护技术规范》与 jr/t 0197《金融数据安全 数据安全分级指南》，覆盖银行、证券、保险、支付四大场景。 需要给金融业务做个人信息处理合规自查、出具评估报告，或长期跟踪整改进度。 四种用法：--demo 用内置样例直接出报告（不必先答题）；交互式逐题自查并存盘；用答案文件作答（适合复跑、批处理与 agent 调用）；--ledger 合规台账自动与上次对比、输出整改进度（跨次累积）。 markdown / json / html 三格式合规报告 + 可持续累积的整改台账。 skill.md 开头有 12 条法律声明：非法律建议、结论基于用户自述且未核实、准确性与责任均有限制。 合规与行业通用 references/jr-t-0171.md references/jr-t-0197.md scripts/fin-pipl-check.py scripts/core/__init__.py changelog.md readme.md disclaimer.md">
+    <header class="ch"><span class="tag" style="--c:#8C2F39">合规与行业通用</span><span class="vr"><b class="mono">1.7.0</b><i>2026-09-26</i></span></header>
+    <h3>Fin-PIPL 金融个人信息保护合规检查</h3>
+    <p class="purpose">金融行业个人信息保护（PIPL）合规检查工具，基于《个人信息保护法》、JR/T 0171《个人金融信息保护技术规范》与 JR/T 0197《金融数据安全 数据安全分级指南》，覆盖银行、证券、保险、支付四大场景。</p>
+    <div class="use"><span class="ul">应用场景</span><p>需要给金融业务做个人信息处理合规自查、出具评估报告，或长期跟踪整改进度。</p></div>
+  </article>
+  <article class="card" data-cat="comp" data-text="金融保险 · 金融财务 finance-finance_ops 金融保险财务全流程，人工在环可溯源交付 金融保险行业的财务垂直技能，覆盖金融财务全流程与行业专属场景、指标口径与合规要求，强调人工在环与可溯源交付。 保险/金融机构的财务分析、指标口径核对、流程性财务交付任务。 角色定位 → 典型业务场景 → 关键指标 kpi → 合规红线 → 工具与系统集成 → 标准工作流 → 人工在环（hitl）闸门 → 输出规范 → 禁止事项。 经人工确认、可溯源的财务交付物。 内置 payskill 按量付费接口（支付宝 ai 付，a2m · http 402），商户与生产配置尚待填写。 合规与行业通用">
+    <header class="ch"><span class="tag" style="--c:#8C2F39">合规与行业通用</span><span class="vr"><b class="mono">2.0.2</b><i>2026-09-03</i></span></header>
+    <h3>金融保险 · 金融财务</h3>
+    <p class="purpose">金融保险行业的财务垂直技能，覆盖金融财务全流程与行业专属场景、指标口径与合规要求，强调人工在环与可溯源交付。</p>
+    <div class="use"><span class="ul">应用场景</span><p>保险/金融机构的财务分析、指标口径核对、流程性财务交付任务。</p></div>
+  </article>
+    </div>
+  </section>
+  </section>
+
+  <p class="empty" id="empty">没有匹配的 Skill，换个关键词试试。</p>
+
+  <footer>
+    数据来源：各技能包 <span class="mono">SKILL.md</span> frontmatter 与正文章节结构、<span class="mono">_meta.json</span> 发布信息，扫描时间 2026-09-28。
+    所有技能均含保险合规边界，输出不构成收益承诺或法律、医疗建议。
+  </footer>
+</main>
+
+<script>
+(function(){
+  var q=document.getElementById('q'), clr=document.getElementById('clr'),
+      items=[].slice.call(document.querySelectorAll('.item')),
+      cards=[].slice.call(document.querySelectorAll('.card'),),
+      grps=[].slice.call(document.querySelectorAll('.grp'),),
+      chips=[].slice.call(document.querySelectorAll('.chip'),),
+      cnt=document.getElementById('count'), empty=document.getElementById('empty'),
+      exp=document.getElementById('exp'),
+      vlist=document.getElementById('v-list'), vcard=document.getElementById('v-card'),
+      segs=[].slice.call(document.querySelectorAll('.seg button'),),
+      f='all', view='list';
+
+  function pool(){ return view==='list' ? items : cards; }
+
+  function apply(){
+    var t=q.value.trim().toLowerCase(), n=0;
+    pool().forEach(function(el){
+      var ok=(f==='all'||el.dataset.cat===f)&&(!t||el.dataset.text.indexOf(t)>-1);
+      el.classList.toggle('hide',!ok); if(ok) n++;
+    });
+    if(view==='card'){
+      grps.forEach(function(g){
+        var vis=[].slice.call(g.querySelectorAll('.card:not(.hide)')).length;
+        g.classList.toggle('hide', vis===0);
+      });
+    }
+    chips.forEach(function(b){ b.classList.toggle('on', b.dataset.f===f); });
+    cnt.textContent=n+' / '+pool().length;
+    empty.style.display=n?'none':'block';
+    clr.style.display=q.value?'block':'none';
+    if(t && n===1) open(pool().filter(function(e){return !e.classList.contains('hide');})[0], true);
+  }
+
+  function open(el,on){
+    if(!el) return;
+    el.classList.toggle('open',on);
+    el.querySelector('.hd').setAttribute('aria-expanded',on?'true':'false');
+    syncExp();
+  }
+  function syncExp(){
+    var open=items.filter(function(i){return i.classList.contains('open');}).length;
+    exp.textContent = open ? '收起全部' : '展开全部';
+    exp.style.visibility = view==='list' ? 'visible' : 'hidden';
+  }
+
+  items.forEach(function(it){
+    it.querySelector('.hd').addEventListener('click',function(){
+      open(it, !it.classList.contains('open'));
+    });
+  });
+  exp.addEventListener('click',function(){
+    var any=items.some(function(i){return !i.classList.contains('open');});
+    items.forEach(function(i){ open(i, any); });
+  });
+  chips.forEach(function(b){ b.addEventListener('click',function(){ f=b.dataset.f; apply(); }); });
+  segs.forEach(function(b){
+    b.addEventListener('click',function(){
+      view=b.dataset.v;
+      segs.forEach(function(x){ x.classList.toggle('on', x===b); });
+      vlist.classList.toggle('hide', view!=='list');
+      vcard.classList.toggle('hide', view!=='card');
+      apply(); syncExp();
+    });
+  });
+  q.addEventListener('input',apply);
+  q.addEventListener('keydown',function(e){ if(e.key==='Escape'){ q.value=''; apply(); } });
+  clr.addEventListener('click',function(){ q.value=''; q.focus(); apply(); });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='/' && document.activeElement!==q){ e.preventDefault(); q.focus(); }
+  });
+  apply(); syncExp();
+})();
+</script>
+</body>
+</html>

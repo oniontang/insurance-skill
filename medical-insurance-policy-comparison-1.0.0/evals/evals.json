@@ -1,0 +1,35 @@
+{
+  "skill_name": "medical-insurance-policy-comparison",
+  "evals": [
+    {
+      "id": 1,
+      "name": "single_policy_deep_analysis",
+      "prompt": "我刚买了太保金佑人生医疗险，保单在 /Users/liminyin/Desktop/生活/保单/小吴/好医保旗舰版2026-小吴.pdf，帮我深度拆解一下这份保单，看看有哪些坑。",
+      "expected_output": "一份完整的医疗保险深度拆解报告，包含：核心结论、基本信息表（按一般医疗/重疾医疗/其他医疗分类）、免责条款分析（区分行业通用vs高发场景）、清单实用性分析（外购药/药店/质子重离子/院外特药）、值得关注条款、费率分析、增值服务、产品总结7维度。",
+      "files": [
+        "/Users/liminyin/Desktop/生活/保单/小吴/好医保旗舰版2026-小吴.pdf"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "multi_policy_comparison",
+      "prompt": "我家里有三份百万医疗险：人保健康好医保旗舰版2026、平安e生安心2026、众安众民保2026臻选版，分别在 /Users/liminyin/Desktop/生活/保单/小吴/ 和 /Users/liminyin/Desktop/生活/保单/小黎/。帮我对比一下哪份最值得续保。",
+      "expected_output": "一份多产品对比报告，包含：基础信息对比表、免责条款对比（只列不通用）、5大清单覆盖范围对比、费率对标（35岁有社保男性）、特色责任对比、9级优先级排序结论、每款产品的最大优势/最大短板、第一选择/备选/不推荐三档建议。",
+      "files": [
+        "/Users/liminyin/Desktop/生活/保单/小吴/好医保旗舰版2026-小吴.pdf",
+        "/Users/liminyin/Desktop/生活/保单/小吴/众民保-爷爷.pdf",
+        "/Users/liminyin/Desktop/生活/保单/小黎/e生安心.pdf"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "family_portfolio_review",
+      "prompt": "我奶奶今年55岁，想给她买医疗险。请对比以下四款适合老人的医疗险：1) 众安众民保2026臻选版（在 /Users/liminyin/Desktop/生活/保单/小吴/众民保-奶奶.pdf）；2) 平安e生安心2026（在 /Users/liminyin/Desktop/生活/保单/小黎/e生安心.pdf）；其他两款你推荐市场上适合55岁老人的。给出购买建议。",
+      "expected_output": "针对55岁老人的医疗险对比报告，包含：4款产品的核心参数对比、告知门槛对比（55岁能否通过）、续保稳定性对比、院外特药对比、费率对比、对老人特殊场景的实用性评估（癌症高发/慢性病常见）、最终推荐排序+核保建议。",
+      "files": [
+        "/Users/liminyin/Desktop/生活/保单/小吴/众民保-奶奶.pdf",
+        "/Users/liminyin/Desktop/生活/保单/小黎/e生安心.pdf"
+      ]
+    }
+  ]
+}

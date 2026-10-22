@@ -1,0 +1,63 @@
+id: growth-router
+name: growth-router
+display_name: 超级保险人
+group: 超级保险人
+category: 总入口
+summary: 帮助保险顾问开始第一次任务，根据当前问题或上一轮结果选择 1 个单体 Skill。
+tags:
+- 超级保险人
+- 新手入门
+- 增长路由
+- Skill导航
+- 下一步
+- 主理人
+- 交接材料
+providers:
+- deepseek
+- kimi
+markdown: SKILL.md
+workspace:
+  strategy: current_or_new
+entry:
+  type: prompt
+  timeout_seconds: 90
+  max_retries: 2
+  output_schema: references/output-schema.md
+inputs:
+- 当前对话
+- 用户问题或材料
+- 已有 Skill 结果
+- 用户当前目标
+outputs:
+- 当前模式
+- 主 Skill
+- 判断依据
+- 关键缺口
+- 直接交接或交接卡
+- 下一步
+api:
+  status: reserved
+  contract: reserved-for-future
+version: 2.0.0
+validation:
+  mode: optional
+  input_script: scripts/quality_gate.py
+  output_script: scripts/output_validator.py
+  retry_script: scripts/retry_policy.py
+  checks:
+  - mode_detection
+  - explicit_skill_precedence
+  - single_primary_skill
+  - route_target_exists
+  - context_reuse
+  - handoff_contract
+  - boundary_review
+  - retry_limit
+  statuses:
+  - ready
+  - onboarding_ready
+  - direct_skill
+  - no_match
+  - needs_more_info
+  - retry
+  - needs_review

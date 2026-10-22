@@ -1,0 +1,4 @@
+interface:
+  display_name: "超级保险人"
+  short_description: "第一次使用、找合适 Skill 或完成任务后问下一步，都从这里开始。"
+  default_prompt: "使用 $growth-router。直接说出你正在处理的保险业务问题、材料或卡点；如果是第一次使用，也可以只说‘第一次使用’。我会读取当前对话，每次只选择 1 个主 Skill，并直接交接或生成可继续使用的交接卡。"

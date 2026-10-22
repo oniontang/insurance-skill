@@ -1,0 +1,4 @@
+interface:
+  display_name: "陈庚-养老方案设计"
+  short_description: "按生、老、病、死四个模块生成养老方案设计报告，不推荐具体产品（养老规划第四步）。"
+  default_prompt: "使用 $chengeng-pension-solution-design。请先检查必要输入字段；资料不足时先列缺口清单，资料足够时按本 Skill 的输出结构生成对应阶段报告。数字以 scripts/pension_calculator.py 输出为准。"

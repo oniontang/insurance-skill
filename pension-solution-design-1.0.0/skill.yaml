@@ -1,0 +1,47 @@
+id: pension-solution-design
+name: pension-solution-design
+display_name: 养老方案设计
+group: 超级保险人
+category: 销售教练
+summary: 按生、老、病、死四个模块生成养老方案设计报告，不推荐具体产品（养老规划第四步）。
+tags:
+- 保险人增长
+- 养老规划
+- 方案设计
+- 生老病死
+- 传承安排
+providers:
+- deepseek
+- kimi
+markdown: SKILL.md
+workspace:
+  strategy: current_or_new
+entry:
+  type: prompt
+  timeout_seconds: 120
+  max_retries: 2
+inputs:
+- 前三步报告结论
+- 客户最担心的问题
+- 家庭支持情况
+- 居住和照护资源
+- 医保与商业保险信息
+- 家庭成员与传承意愿
+outputs:
+- 方案前提表
+- 方案设计原则
+- 生：资金池安排
+- 老：护理状态与照护资源
+- 病：保障方案
+- 死：传承安排
+- 分阶段行动计划
+api:
+  status: reserved
+  contract: reserved-for-future
+version: 1.0.0
+validation:
+  mode: optional
+  checks:
+  - input_required_fields
+  - output_required_blocks
+  - source_and_boundary_review

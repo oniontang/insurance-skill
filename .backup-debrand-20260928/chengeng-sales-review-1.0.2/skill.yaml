@@ -1,0 +1,58 @@
+id: chengeng-sales-review
+name: chengeng-sales-review
+display_name: 陈庚-销售复盘
+group: 超级保险人
+category: 复盘分析师
+summary: 复盘保险客户沟通、面谈和方案推进过程，输出事实纪要、客户阶段、卡点、表达问题、下一步动作和可复用经验。
+tags:
+- 保险人增长
+- 销售复盘
+- 客户面谈
+- 沟通诊断
+- 跟进动作
+- 复盘分析师
+providers:
+- deepseek
+- kimi
+markdown: SKILL.md
+workspace:
+  strategy: current_or_new
+entry:
+  type: prompt
+  timeout_seconds: 90
+  max_retries: 2
+  output_schema: references/output-schema.md
+inputs:
+- 聊天记录
+- 面谈记录
+- 方案讲解记录
+- 跟进结果
+- 顾问复盘备注
+outputs:
+- 沟通摘要
+- 事实推断分离
+- 客户阶段判断
+- 销售卡点
+- 沟通表达诊断
+- 下一步动作
+- 可复用经验
+api:
+  status: reserved
+  contract: reserved-for-future
+version: 1.0.2
+validation:
+  mode: optional
+  input_script: scripts/quality_gate.py
+  output_script: scripts/output_validator.py
+  retry_script: scripts/retry_policy.py
+  checks:
+  - trigger_match
+  - input_required_fields
+  - output_required_blocks
+  - boundary_review
+  - retry_limit
+  statuses:
+  - ready
+  - needs_more_info
+  - retry
+  - needs_review
